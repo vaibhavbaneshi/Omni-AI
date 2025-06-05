@@ -10,6 +10,8 @@ langchain-openai
 langchain-neo4j
 langchain-pinecone
 langchain-fireworks
+langchain_huggingface
+langchain_chroma
 langsmith
 cassio
 crewai
@@ -27,3 +29,5 @@ gradio
 sympy
 numpy
 python-dotenv
+streamlit
+PyMuPDF
