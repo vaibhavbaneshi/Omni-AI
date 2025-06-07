@@ -1,18 +1,17 @@
 import streamlit as st
-from document_qa_rag.app import run_pdf_rag
+from common.core_imports import run_pdf_rag, run_search_engine
 st.set_page_config(page_title="Omni-AI", layout="wide")
 st.title("Omni-AI")
 st.title("All Your AI Needs. One OmniBrain.")
 
 st.sidebar.title("Choose a Feature")
-genai_tool = ""
 
 # === TOOL REGISTRY ===
 TOOL_REGISTRY = {
     "✅ Chatbots": {
         "✅ Conversational Chatbot": lambda: st.write("Conversational Chatbot coming soon..."),
         "✅ PDF Q&A Chatbot": run_pdf_rag,
-        "✅ Multi-Agent RAG Chatbot": lambda: st.write("Multi-Agent RAG coming soon..."),
+        "✅ Multi-Agent RAG Chatbot": run_search_engine,
         "✅ Multilingual Code Assistant": lambda: st.write("Code Assistant coming soon..."),
         "✅ Multi-LLM Chatbot": lambda: st.write("Multi-LLM Chatbot coming soon...")
     },

@@ -31,3 +31,4 @@ numpy
 python-dotenv
 streamlit
 PyMuPDF
+duckduckgo_search
