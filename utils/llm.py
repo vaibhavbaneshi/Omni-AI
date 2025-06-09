@@ -3,4 +3,4 @@ import os
 
 api_key = os.getenv('GROQ_API_KEY')
 
-llm=ChatGroq(groq_api_key=api_key, model="Llama3-8b-8192", streaming=True)
+llm=ChatGroq(groq_api_key=api_key, model="Gemma2-9b-It", streaming=True)

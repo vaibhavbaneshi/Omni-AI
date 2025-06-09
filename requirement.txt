@@ -32,3 +32,5 @@ python-dotenv
 streamlit
 PyMuPDF
 duckduckgo_search
+pytube
+urllib3

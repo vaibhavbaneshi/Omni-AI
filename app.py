@@ -1,5 +1,6 @@
 import streamlit as st
-from common.core_imports import run_pdf_rag, run_search_engine
+from common.core_imports import run_pdf_rag, run_search_engine, run_text_summarization
+
 st.set_page_config(page_title="Omni-AI", layout="wide")
 st.title("Omni-AI")
 st.title("All Your AI Needs. One OmniBrain.")
@@ -16,9 +17,8 @@ TOOL_REGISTRY = {
         "✅ Multi-LLM Chatbot": lambda: st.write("Multi-LLM Chatbot coming soon...")
     },
     "📄 Document & Web Intelligence": {
-        "📄 Website Summarizer": lambda: st.write("Website Summarizer coming soon..."),
-        "📄 YouTube Video Summarizer": lambda: st.write("YouTube Summarizer coming soon..."),
-        "📄 Text Summarizer": lambda: st.write("Text Summarizer coming soon..."),
+        "📄 Website and YouTube Video Summarizer": run_text_summarization,
+        "📄 Text Summarization": lambda: st.write("Text Summarization coming soon..."),
         "📄 Document Uploader & Multi-PDF Search": lambda: st.write("Multi-PDF Search coming soon..."),
         "📄 DocChat with Metadata Filters": lambda: st.write("Metadata DocChat coming soon...")
     },
