@@ -1,24 +1,21 @@
 import sys
 import os
-import requests
 import validators
+import time
+import urllib3
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from common.streamlit_imports import st
+
 from common.langchain_imports import (
     PromptTemplate, load_summarize_chain,
-    YoutubeLoader, UnstructuredURLLoader,
+    YouTubeTranscriptApi, UnstructuredURLLoader,
     TranscriptsDisabled, NoTranscriptFound, Document
 )
-from utils.llm import llm
-from utils.video_id import extract_video_id
-from common.config import load_dotenv
-from xml.etree.ElementTree import ParseError
-from youtube_transcript_api import YouTubeTranscriptApi
-import time
 
-import urllib3
+from common.config import load_dotenv
+
 from utils.llm import llm
 from utils.video_id import extract_video_id
 
@@ -48,8 +45,6 @@ def run_text_summarization():
     RETRY_DELAY = 2
 
     if st.button("Summarize the content from YT or Website"):
-        st.write("🚀 Button clicked.")
-
         if not generic_url.strip():
             st.error("Please provide a URL.")
             return
@@ -62,12 +57,14 @@ def run_text_summarization():
 
         success = False
         attempt_msg = st.empty()
+        
         parse_error_shown = False
-
         youtube_msg_shown = False
         analysis_msg_shown = False
         building_chain_msg_shown = False
         running_chain_msg_shown = False
+
+        video_id = extract_video_id(generic_url)
 
         for attempt in range(1, MAX_RETRIES + 1):
             try:
@@ -80,7 +77,6 @@ def run_text_summarization():
                             st.write("\U0001F3A5 Detected YouTube URL.")
                             youtube_msg_shown = True
 
-                        video_id = extract_video_id(generic_url)
                         try:
                             result = YouTubeTranscriptApi.get_transcript(video_id)
                             if not analysis_msg_shown:
@@ -106,13 +102,13 @@ def run_text_summarization():
                             response = http.request('GET', generic_url)
 
                             st.write(f"\U0001F4E1 Response status code: {response.status}")
-                            if response.status != 200 or len(response.data.strip()) == 0:
+                            if response.status != 200 or len(response.data.decode('utf-8').strip()) == 0:
                                 st.error("❌ Failed to fetch website content.")
                                 break
 
                             loader = UnstructuredURLLoader(
                                 urls=[generic_url],
-                                ssl_verify=True,
+                                ssl_verify=False,
                                 headers={"User-Agent": "Mozilla/5.0"}
                             )
                             st.write("\U0001F4C4 Extracting content with UnstructuredURLLoader...")
@@ -128,9 +124,12 @@ def run_text_summarization():
                             break
 
                     prompt_template = """
-                    Provide a summary of the following content in 300 words:
-                    Content: {text}
-                    """
+                                            You are an expert summarizer. Summarize the following content in less than 300 words, preserving key points, events, or arguments. Keep the tone neutral and clear.
+
+                                            Content:
+                                            {text}
+                                      """
+
                     prompt = PromptTemplate(template=prompt_template, input_variables=['text'])
 
                     if not building_chain_msg_shown:
