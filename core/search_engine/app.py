@@ -4,14 +4,11 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from common.streamlit_imports import st
-from common.langchain_imports import initialize_agent, AgentType, ArxivQueryRun, WikipediaQueryRun, ArxivAPIWrapper, WikipediaAPIWrapper, StreamlitCallbackHandler, Tool, DuckDuckGoSearchRun
-
-from common.config import load_dotenv
+from common.langchain_imports import (
+    initialize_agent, AgentType, ArxivQueryRun, WikipediaQueryRun, ArxivAPIWrapper, WikipediaAPIWrapper, StreamlitCallbackHandler, Tool, DuckDuckGoSearchRun
+)
 
 from utils.llm import llm
-
-import os
-load_dotenv()
 
 def run_search_engine():
     st.subheader("🔎 LangChain - Chat with Search")

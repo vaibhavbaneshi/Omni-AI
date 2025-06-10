@@ -1,5 +1,5 @@
 import streamlit as st
-from common.core_imports import run_pdf_rag, run_search_engine, run_text_summarization
+from common.core_imports import run_pdf_rag, run_search_engine, run_text_summarization, run_math_gpt
 
 st.set_page_config(page_title="Omni-AI", layout="wide")
 st.title("Omni-AI")
@@ -18,15 +18,11 @@ TOOL_REGISTRY = {
     },
     "📄 Document & Web Intelligence": {
         "📄 Website and YouTube Video Summarizer": run_text_summarization,
-        "📄 Text Summarization": lambda: st.write("Text Summarization coming soon..."),
         "📄 Document Uploader & Multi-PDF Search": lambda: st.write("Multi-PDF Search coming soon..."),
         "📄 DocChat with Metadata Filters": lambda: st.write("Metadata DocChat coming soon...")
     },
     "🔢 Math & Reasoning": {
-        "🔢 Math Problem Solver": lambda: st.write("Math Solver coming soon..."),
-        "🔢 YouTube Video Summarizer": lambda: st.write("YouTube Video Summarizer coming soon..."),
-        "🔢 Logical Reasoning Assistant": lambda: st.write("Reasoning Assistant coming soon..."),
-        "🔢 Integrated Wikipedia + Math + Reasoning Agent": lambda: st.write("Wiki+Math Agent coming soon...")
+        "🔢 Integrated Wikipedia + Math + Reasoning Agent": run_math_gpt
     },
     "🧠 Knowledge & Graph-based Tools": {
         "🧠 Knowledge Graph Builder": lambda: st.write("KG Builder coming soon..."),

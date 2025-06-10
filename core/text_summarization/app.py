@@ -14,12 +14,8 @@ from common.langchain_imports import (
     TranscriptsDisabled, NoTranscriptFound, Document
 )
 
-from common.config import load_dotenv
-
 from utils.llm import llm
 from utils.video_id import extract_video_id
-
-load_dotenv()
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 http = urllib3.PoolManager(headers={"User-Agent": "Mozilla/5.0"})

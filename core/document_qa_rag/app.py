@@ -1,25 +1,24 @@
 ## RAG Q&A Conversation With PDF Including Chat History
+import tempfile
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+from common.streamlit_imports import st
+
+from common.langchain_imports import PyMuPDFLoader, RecursiveCharacterTextSplitter, create_history_aware_retriever, create_retrieval_chain, create_stuff_documents_chain, HuggingFaceEmbeddings, ChatGroq, Chroma, ChatPromptTemplate, MessagesPlaceholder, RunnableWithMessageHistory, BaseChatMessageHistory, ChatMessageHistory
+
+from utils.chunk_size import get_dynamic_chunk_size
+
+from utils.llm import llm
+
+from utils.embeddings import embeddings
 
 def run_pdf_rag():
-    import tempfile
-    import sys
-    import os
-
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-    from common.streamlit_imports import st
-    from common.langchain_imports import PyMuPDFLoader, RecursiveCharacterTextSplitter, create_history_aware_retriever, create_retrieval_chain, create_stuff_documents_chain, HuggingFaceEmbeddings, ChatGroq, Chroma, ChatPromptTemplate, MessagesPlaceholder, RunnableWithMessageHistory, BaseChatMessageHistory, ChatMessageHistory
-    from common.standard_lib_imports import os, io
-    from utils.chunk_size import get_dynamic_chunk_size
-
-    os.environ['HF_TOKEN']=os.getenv("HF_TOKEN")
-    groq_api_key=os.getenv("GROQ_API_KEY")
-    embeddings=HuggingFaceEmbeddings(model_name="Sybghat/all-MiniLM-L6-v2-finetuned-squad")
-
     st.subheader('RAG Q&A Conversation With PDF Including Chat History')
     st.write('This app allows you to ask questions about a PDF document and maintain a chat history.')
 
-    llm=ChatGroq(groq_api_key=groq_api_key, model_name='Gemma2-9b-It')
     session_id=st.text_input("Session ID", value="default_session")
 
     if 'store' not in session_id:
