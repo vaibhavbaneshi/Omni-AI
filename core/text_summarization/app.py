@@ -38,7 +38,7 @@ def run_text_summarization():
     generic_url = st.text_input("URL", label_visibility="collapsed")
 
     MAX_RETRIES = 15
-    RETRY_DELAY = 2
+    RETRY_DELAY = 5
 
     if st.button("Summarize the content from YT or Website"):
         if not generic_url.strip():
@@ -62,8 +62,9 @@ def run_text_summarization():
 
         video_id = extract_video_id(generic_url)
 
+        st.write("Video ID: " + video_id)
+
         for attempt in range(1, MAX_RETRIES + 1):
-            try:
                 attempt_msg.markdown(f"🔁 **Attempt {attempt} of {MAX_RETRIES}**")
                 with st.spinner("\U0001F50D Loading and summarizing content..."):
                     docs = []
@@ -74,11 +75,10 @@ def run_text_summarization():
                             youtube_msg_shown = True
 
                         try:
-                            result = YouTubeTranscriptApi.get_transcript(video_id)
-                            if not analysis_msg_shown:
-                                st.write("\U0001F4E5 Analysing YouTube Video...")
-                                analysis_msg_shown = True
-
+                            transcripts = YouTubeTranscriptApi.list_transcripts(video_id)
+                            en_transcript = transcripts.find_transcript(['en'])
+                            result = en_transcript.fetch()
+                            st.write("\U0001F4E5 Analysing YouTube Video...")
                             docs = [Document(page_content="\n".join([line["text"] for line in result]))]
 
                         except (TranscriptsDisabled, NoTranscriptFound):
@@ -87,9 +87,12 @@ def run_text_summarization():
 
                         except Exception as e:
                             if not parse_error_shown:
-                                st.warning("⚠️ Transcript could not be parsed or loaded. Retrying...")
+                                st.warning(f"⚠️ Could not load transcript. Retrying...\nError: {type(e).__name__}: {e}")
                                 parse_error_shown = True
+                            else:
+                                st.info(f"Retrying... Error: {type(e).__name__}: {e}")
                             continue
+
 
                     else:
                         st.write("\U0001F310 Detected regular website URL.")
@@ -125,7 +128,7 @@ def run_text_summarization():
                                             Content:
                                             {text}
                                       """
-
+                    
                     prompt = PromptTemplate(template=prompt_template, input_variables=['text'])
 
                     if not building_chain_msg_shown:
@@ -145,9 +148,7 @@ def run_text_summarization():
 
                     success = True
                     break
-
-            except Exception as e:
-                st.warning(f"⚠️ Attempt {attempt} failed with error: {type(e).__name__}: {e}")
+          
                 time.sleep(RETRY_DELAY)
 
         if not success:

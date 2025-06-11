@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 
 from common.streamlit_imports import st
 
-from common.langchain_imports import PyMuPDFLoader, RecursiveCharacterTextSplitter, create_history_aware_retriever, create_retrieval_chain, create_stuff_documents_chain, HuggingFaceEmbeddings, ChatGroq, Chroma, ChatPromptTemplate, MessagesPlaceholder, RunnableWithMessageHistory, BaseChatMessageHistory, ChatMessageHistory
+from common.langchain_imports import PyMuPDFLoader, RecursiveCharacterTextSplitter, create_history_aware_retriever, create_retrieval_chain, create_stuff_documents_chain, Chroma, ChatPromptTemplate, MessagesPlaceholder, RunnableWithMessageHistory, BaseChatMessageHistory, ChatMessageHistory
 
 from utils.chunk_size import get_dynamic_chunk_size
 

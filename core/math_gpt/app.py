@@ -4,7 +4,6 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
 from common.streamlit_imports import st
-from common.config import load_dotenv
 
 from common.langchain_imports import (
     PromptTemplate, AgentType, Tool, initialize_agent, StreamlitCallbackHandler, LLMChain

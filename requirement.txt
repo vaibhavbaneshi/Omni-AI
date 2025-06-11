@@ -34,3 +34,4 @@ PyMuPDF
 duckduckgo_search
 pytube
 urllib3
+huggingface_hub
