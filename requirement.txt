@@ -35,3 +35,5 @@ duckduckgo_search
 pytube
 urllib3
 huggingface_hub
+crewai_tools
+yt_dlp

@@ -2,7 +2,9 @@ from common.langchain_imports import (
     WikipediaAPIWrapper, Tool, LLMMathChain
 )
 
-from utils.llm import llm
+from utils.llm import crew_llm
+
+from crewai_tools import YoutubeChannelSearchTool
 
 ##Initialize tools
 wikipedia_wrapper = WikipediaAPIWrapper()
@@ -19,3 +21,7 @@ calculator=Tool(
     func=math_chain.run,
     description="A tools for answering math related questions. Only input mathematical expression need to bed provided"
 )
+
+# Initialize the tool with a specific Youtube channel handle to target your search
+
+yt_tool = YoutubeChannelSearchTool(youtube_channel_handle='@StudyIQEducationLtd', llm=crew_llm)

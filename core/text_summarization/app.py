@@ -56,7 +56,6 @@ def run_text_summarization():
         
         parse_error_shown = False
         youtube_msg_shown = False
-        analysis_msg_shown = False
         building_chain_msg_shown = False
         running_chain_msg_shown = False
 

@@ -1,5 +1,5 @@
 import streamlit as st
-from common.core_imports import run_pdf_rag, run_search_engine, run_text_summarization, run_math_gpt, run_code_gpt
+from common.core_imports import run_pdf_rag, run_search_engine, run_text_summarization, run_math_gpt, run_code_gpt, run_blog_writer
 
 st.set_page_config(page_title="Omni-AI", layout="wide")
 st.title("Omni-AI")
