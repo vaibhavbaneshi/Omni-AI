@@ -1,0 +1,70 @@
+# Core LangChain ecosystem
+langchain
+langchain_community
+langchain_core
+langchainhub
+langgraph
+langchain_groq
+langchain_astradb
+langchain_nvidia-ai-endpoints
+langchain_openai
+langchain_neo4j
+langchain_pinecone
+langchain_fireworks
+langchain_huggingface
+langchain_chroma
+langsmith
+
+# Multi-agent & orchestration
+crewai
+crewai_tools
+
+# Vector DBs
+faiss-cpu
+chromadb
+
+# Tokenization & embeddings
+tiktoken
+sentence-transformers
+huggingface_hub
+
+# PDF & document loaders
+pypdf
+PyPDF2
+PyMuPDF
+docx2txt
+python-docx
+python-pptx
+unstructured
+openpyxl
+
+# Extra document formats
+pandas          # CSV
+pillow          # Images
+pytesseract     # OCR (optional but useful for scanned PDFs/images)
+extract-msg     # Outlook .msg emails
+ebooklib        # EPUB eBooks
+
+# Web / HTML parsing
+beautifulsoup4
+lxml
+urllib3
+
+# Media / YouTube ingestion
+youtube_transcript_api
+yt_dlp
+pytube
+
+# Frontend frameworks
+streamlit
+gradio
+
+# Math & scientific
+sympy
+numpy
+
+# Env management
+python-dotenv
+
+# Search utilities
+duckduckgo-search

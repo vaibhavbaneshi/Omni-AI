@@ -69,7 +69,7 @@ def run_math_gpt():
     if prompt:=st.chat_input(placeholder="I have 5 bananas and 7 grapes. I eat 2 bananas and give away 3 grapes. Then I buy a dozen apples and 2 packs of blueberries. Each pack of blueberries contains 25 berries. How many total pieces of fruit do I have at the end?"
     ):
         with st.spinner("Generating response..."):
-            st.session_state.messages.append({"role:": "user", "content": prompt})
+            st.session_state.messages.append({"role": "user", "content": prompt})
             st.chat_message("user").write(prompt)
 
             st_cb=StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)

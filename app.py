@@ -1,5 +1,5 @@
 import streamlit as st
-from common.core_imports import run_pdf_rag, run_search_engine, run_text_summarization, run_math_gpt, run_code_gpt, run_blog_writer
+from common.core_imports import run_pdf_rag, run_search_engine, run_math_gpt, run_code_gpt, run_docchat_with_filters
 
 st.set_page_config(page_title="Omni-AI", layout="wide")
 st.title("Omni-AI")
@@ -10,16 +10,13 @@ st.sidebar.title("Choose a Feature")
 # === TOOL REGISTRY ===
 TOOL_REGISTRY = {
     "✅ Chatbots": {
-        "✅ Conversational Chatbot": lambda: st.write("Conversational Chatbot coming soon..."),
         "✅ PDF Q&A Chatbot": run_pdf_rag,
         "✅ Multi-Agent RAG Chatbot": run_search_engine,
-        "✅ Multilingual Code Assistant": run_code_gpt,
-        "✅ Multi-LLM Chatbot": lambda: st.write("Multi-LLM Chatbot coming soon...")
+        "✅ Multilingual Code Assistant": run_code_gpt
     },
     "📄 Document & Web Intelligence": {
-        "📄 Website and YouTube Video Summarizer": run_text_summarization,
         "📄 Document Uploader & Multi-PDF Search": lambda: st.write("Multi-PDF Search coming soon..."),
-        "📄 DocChat with Metadata Filters": lambda: st.write("Metadata DocChat coming soon...")
+        "📄 DocChat with Metadata Filters": run_docchat_with_filters
     },
     "🔢 Math & Reasoning": {
         "🔢 Integrated Wikipedia + Math + Reasoning Agent": run_math_gpt
