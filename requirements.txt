@@ -4,7 +4,7 @@ langchain_community
 langchain_core
 langchainhub
 langgraph
-langchain_groq
+langchain_groq==0.2.0
 langchain_astradb
 langchain_nvidia-ai-endpoints
 langchain_openai
@@ -14,6 +14,7 @@ langchain_fireworks
 langchain_huggingface
 langchain_chroma
 langsmith
+langchain-experimental==0.3.2
 
 # Multi-agent & orchestration
 crewai
@@ -24,7 +25,7 @@ faiss-cpu
 chromadb
 
 # Tokenization & embeddings
-tiktoken
+tiktoken==0.7.0
 sentence-transformers
 huggingface_hub
 
@@ -46,9 +47,10 @@ extract-msg     # Outlook .msg emails
 ebooklib        # EPUB eBooks
 
 # Web / HTML parsing
-beautifulsoup4
+beautifulsoup4==4.12.3
 lxml
 urllib3
+html5lib
 
 # Media / YouTube ingestion
 youtube_transcript_api
@@ -56,15 +58,35 @@ yt_dlp
 pytube
 
 # Frontend frameworks
-streamlit
+streamlit==1.38.0
 gradio
 
 # Math & scientific
 sympy
 numpy
+matplotlib
 
 # Env management
-python-dotenv
+python-dotenv==1.0.1
 
 # Search utilities
 duckduckgo-search
+
+# Logging / scheduling
+loguru==0.7.2
+apscheduler
+
+# KG / NLP
+spacy==3.7.4
+networkx==3.3
+pyvis==0.3.2
+neo4j
+
+# Web inputs
+requests==2.32.3
+
+# Install spaCy model at build time
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
+
+# Certificates
+certifi

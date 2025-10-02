@@ -1,5 +1,5 @@
 import streamlit as st
-from common.core_imports import run_pdf_rag, run_search_engine, run_math_gpt, run_code_gpt, run_docchat_with_filters
+from common.core_imports import run_pdf_rag, run_search_engine, run_math_gpt, run_code_gpt, run_docchat_with_filters, run_kg_chatbot
 
 st.set_page_config(page_title="Omni-AI", layout="wide")
 st.title("Omni-AI")
@@ -15,16 +15,13 @@ TOOL_REGISTRY = {
         "✅ Multilingual Code Assistant": run_code_gpt
     },
     "📄 Document & Web Intelligence": {
-        "📄 Document Uploader & Multi-PDF Search": lambda: st.write("Multi-PDF Search coming soon..."),
         "📄 DocChat with Metadata Filters": run_docchat_with_filters
     },
     "🔢 Math & Reasoning": {
         "🔢 Integrated Wikipedia + Math + Reasoning Agent": run_math_gpt
     },
     "🧠 Knowledge & Graph-based Tools": {
-        "🧠 Knowledge Graph Builder": lambda: st.write("KG Builder coming soon..."),
-        "🧠 Graph Query Chatbot": lambda: st.write("Graph Query Bot coming soon..."),
-        "🧠 Graph-based Multi-hop Reasoner": lambda: st.write("Multi-hop Reasoner coming soon...")
+        "🧠 Knowledge Graph Build and ChatBot": run_kg_chatbot,
     },
     "🧪 Fine-Tuning Playground": {
         "🧪 Fine-tune LLM with Custom Data": lambda: st.write("Fine-tuning coming soon..."),
@@ -34,7 +31,6 @@ TOOL_REGISTRY = {
     "🧠 Multi-Agent Systems": {
         "🧠 YouTube-to-Blog Writer": lambda: st.write("YT-Blog Writer coming soon..."),
         "🧠 Research Assistant with Search + Summary Agents": lambda: st.write("Research Assistant coming soon..."),
-        "🧠 Multi-Agent File Analyzer": lambda: st.write("File Analyzer coming soon...")
     }
 }
 

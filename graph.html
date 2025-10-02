@@ -1,0 +1,127 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 600px;
+                 background-color: #222222;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "font": {"color": "white"}, "id": "Elon Musk", "label": "Elon Musk", "shape": "dot", "title": "Elon Musk"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "SpaceX", "label": "SpaceX", "shape": "dot", "title": "SpaceX"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Tesla, Inc.", "label": "Tesla, Inc.", "shape": "dot", "title": "Tesla, Inc."}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "The Boring Company", "label": "The Boring Company", "shape": "dot", "title": "The Boring Company"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "xAI", "label": "xAI", "shape": "dot", "title": "xAI"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Neuralink", "label": "Neuralink", "shape": "dot", "title": "Neuralink"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "OpenAI", "label": "OpenAI", "shape": "dot", "title": "OpenAI"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "University of Pretoria", "label": "University of Pretoria", "shape": "dot", "title": "University of Pretoria"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Queen\u0027s University at Kingston", "label": "Queen\u0027s University at Kingston", "shape": "dot", "title": "Queen\u0027s University at Kingston"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "University of Pennsylvania", "label": "University of Pennsylvania", "shape": "dot", "title": "University of Pennsylvania"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Stanford University", "label": "Stanford University", "shape": "dot", "title": "Stanford University"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Zip2", "label": "Zip2", "shape": "dot", "title": "Zip2"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Businessman", "label": "Businessman", "shape": "dot", "title": "Businessman"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Investor", "label": "Investor", "shape": "dot", "title": "Investor"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Canada", "label": "Canada", "shape": "dot", "title": "Canada"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "X Corp.", "label": "X Corp.", "shape": "dot", "title": "X Corp."}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Twitter", "label": "Twitter", "shape": "dot", "title": "Twitter"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "US$221 billion", "label": "US$221 billion", "shape": "dot", "title": "US$221 billion"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Kimbal Musk", "label": "Kimbal Musk", "shape": "dot", "title": "Kimbal Musk"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "1989", "label": "1989", "shape": "dot", "title": "1989"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "1995", "label": "1995", "shape": "dot", "title": "1995"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "World", "label": "World", "shape": "dot", "title": "World"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "California", "label": "California", "shape": "dot", "title": "California"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Elon Reeve Musk", "label": "Elon Reeve Musk", "shape": "dot", "title": "Elon Reeve Musk"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Pretoria", "label": "Pretoria", "shape": "dot", "title": "Pretoria"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Maye", "label": "Maye", "shape": "dot", "title": "Maye"}, {"color": "#97c2fc", "font": {"color": "white"}, "id": "Errol Musk", "label": "Errol Musk", "shape": "dot", "title": "Errol Musk"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Elon Musk", "label": "FOUNDED", "to": "SpaceX"}, {"arrows": "to", "from": "Elon Musk", "label": "FOUNDED", "to": "Tesla, Inc."}, {"arrows": "to", "from": "Elon Musk", "label": "FOUNDED", "to": "The Boring Company"}, {"arrows": "to", "from": "Elon Musk", "label": "FOUNDED", "to": "xAI"}, {"arrows": "to", "from": "Elon Musk", "label": "FOUNDED", "to": "Neuralink"}, {"arrows": "to", "from": "Elon Musk", "label": "FOUNDED", "to": "OpenAI"}, {"arrows": "to", "from": "Elon Musk", "label": "ATTENDED", "to": "University of Pretoria"}, {"arrows": "to", "from": "Elon Musk", "label": "ATTENDED", "to": "Queen\u0027s University at Kingston"}, {"arrows": "to", "from": "Elon Musk", "label": "ATTENDED", "to": "University of Pennsylvania"}, {"arrows": "to", "from": "Elon Musk", "label": "ATTENDED", "to": "Stanford University"}, {"arrows": "to", "from": "Elon Musk", "label": "CO_FOUNDED", "to": "Zip2"}, {"arrows": "to", "from": "Elon Musk", "label": "PROFESSION", "to": "Businessman"}, {"arrows": "to", "from": "Elon Musk", "label": "PROFESSION", "to": "Investor"}, {"arrows": "to", "from": "Elon Musk", "label": "CITIZENSHIP_THROUGH", "to": "Canada"}, {"arrows": "to", "from": "Elon Musk", "label": "OWNED", "to": "X Corp."}, {"arrows": "to", "from": "Elon Musk", "label": "OWNED", "to": "Twitter"}, {"arrows": "to", "from": "Elon Musk", "label": "NET_WORTH", "to": "US$221 billion"}, {"arrows": "to", "from": "Elon Musk", "label": "PARENT_OF", "to": "Kimbal Musk"}, {"arrows": "to", "from": "Elon Musk", "label": "YEAR_OF_IMMIGRATION", "to": "1989"}, {"arrows": "to", "from": "Elon Musk", "label": "YEAR_OF_ATTENDING_STANFORD", "to": "1995"}, {"arrows": "to", "from": "Elon Musk", "label": "WEALTHIEST_PERSON", "to": "World"}, {"arrows": "to", "from": "SpaceX", "label": "HEADQUARTERED", "to": "California"}, {"arrows": "to", "from": "Tesla, Inc.", "label": "HEADQUARTERED", "to": "California"}, {"arrows": "to", "from": "X Corp.", "label": "FORMERLY", "to": "Twitter"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "BORN_IN", "to": "Pretoria"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "PARENT", "to": "Maye"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "PARENT", "to": "Errol Musk"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "FOUNDED", "to": "SpaceX"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "FOUNDED", "to": "The Boring Company"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "FOUNDED", "to": "xAI"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "FOUNDED", "to": "Neuralink"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "FOUNDED", "to": "OpenAI"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "ATTENDED", "to": "University of Pretoria"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "ATTENDED", "to": "Queen\u0027s University at Kingston"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "ATTENDED", "to": "University of Pennsylvania"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "ATTENDED", "to": "Stanford University"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "CO_FOUNDED", "to": "Zip2"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "PROFESSION", "to": "Businessman"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "PROFESSION", "to": "Investor"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "OWNERSHIP", "to": "X Corp."}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "OWNERSHIP", "to": "Twitter"}, {"arrows": "to", "from": "Elon Reeve Musk", "label": "NET_WORTH", "to": "US$221 billion"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {"edges": {"color": {"inherit": "from"}}, "nodes": {"size": 15}};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
