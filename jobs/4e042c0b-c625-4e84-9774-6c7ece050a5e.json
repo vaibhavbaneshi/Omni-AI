@@ -1,0 +1,11 @@
+{
+  "jsonl_path": "C:\\Users\\HP\\OneDrive\\Desktop\\Omni-AI\\jobs\\4e042c0b-c625-4e84-9774-6c7ece050a5e.jsonl",
+  "base_model": "meta-llama/Llama-2-7b-hf",
+  "use_qlora": true,
+  "epochs": 3,
+  "batch": 4,
+  "lr": 2e-05,
+  "max_length": 1024,
+  "status": "failed",
+  "error": "run_training() got an unexpected keyword argument 'job_id_cancel_check'"
+}

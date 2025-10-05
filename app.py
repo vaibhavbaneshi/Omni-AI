@@ -1,5 +1,5 @@
 import streamlit as st
-from common.core_imports import run_pdf_rag, run_search_engine, run_math_gpt, run_code_gpt, run_docchat_with_filters, run_kg_chatbot
+from common.core_imports import run_pdf_rag, run_search_engine, run_math_gpt, run_code_gpt, run_docchat_with_filters, run_kg_chatbot, run_fine_tune
 
 st.set_page_config(page_title="Omni-AI", layout="wide")
 st.title("Omni-AI")
@@ -24,13 +24,11 @@ TOOL_REGISTRY = {
         "🧠 Knowledge Graph Build and ChatBot": run_kg_chatbot,
     },
     "🧪 Fine-Tuning Playground": {
-        "🧪 Fine-tune LLM with Custom Data": lambda: st.write("Fine-tuning coming soon..."),
-        "🧪 Prompt Debugger with LangSmith": lambda: st.write("LangSmith Debugger coming soon..."),
-        "🧪 Quantization Visualizer": lambda: st.write("Quantization Visualizer coming soon...")
+        "🧪 Fine-tune LLM with Custom Data": run_fine_tune
     },
     "🧠 Multi-Agent Systems": {
-        "🧠 YouTube-to-Blog Writer": lambda: st.write("YT-Blog Writer coming soon..."),
-        "🧠 Research Assistant with Search + Summary Agents": lambda: st.write("Research Assistant coming soon..."),
+        "🧠 YouTube-to-Blog Writer": st.write("YT-Blog Writer coming soon..."),
+        "🧠 Research Assistant with Search + Summary Agents": st.write("Research Assistant coming soon..."),
     }
 }
 

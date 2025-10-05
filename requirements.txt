@@ -1,92 +1,149 @@
-# Core LangChain ecosystem
-langchain
-langchain_community
-langchain_core
-langchainhub
-langgraph
-langchain_groq==0.2.0
-langchain_astradb
-langchain_nvidia-ai-endpoints
-langchain_openai
-langchain_neo4j
-langchain_pinecone
-langchain_fireworks
-langchain_huggingface
-langchain_chroma
-langsmith
-langchain-experimental==0.3.2
+############################################################
+# 🧠 OMNIAI — Unified AI Platform Requirements
+# Author: Vaibhav
+# Description: Full-stack environment for OmniAI features
+# Includes: LangChain, CrewAI, Neo4j, RAG, KG, Fine-Tuning, Streamlit UI
+############################################################
 
-# Multi-agent & orchestration
-crewai
-crewai_tools
+#############################
+# 🌐 Core LangChain ecosystem
+#############################
+langchain                       # Core LangChain framework
+langchain_community              # Community integrations
+langchain_core                   # Core utilities
+langchainhub                     # LangChainHub tools/prompts
+langgraph                        # For building multi-node workflows
+langchain_groq                   # Groq API integration
+langchain_astradb                # AstraDB vector DB integration
+langchain_nvidia-ai-endpoints    # NVIDIA AI endpoints
+langchain_openai                 # OpenAI model connectors
+langchain_neo4j                  # Neo4j graph DB integration
+langchain_pinecone               # Pinecone vector DB integration
+langchain_fireworks              # Fireworks.ai connector
+langchain_huggingface            # Hugging Face integration
+langchain_chroma                 # Chroma vector store
+langsmith                        # Observability and tracing
+langchain-experimental           # Experimental LangChain features
 
-# Vector DBs
-faiss-cpu
-chromadb
+################################
+# 🤖 Multi-agent orchestration
+################################
+crewai                           # CrewAI orchestration
+crewai_tools                     # CrewAI tools
 
-# Tokenization & embeddings
-tiktoken==0.7.0
-sentence-transformers
-huggingface_hub
+#############################
+# 📚 Vector Databases
+#############################
+faiss-cpu                        # Local vector search
+chromadb                         # Chroma vector DB
 
-# PDF & document loaders
-pypdf
-PyPDF2
-PyMuPDF
-docx2txt
-python-docx
-python-pptx
-unstructured
-openpyxl
+#############################
+# ✍️ Tokenization & Embeddings
+#############################
+tiktoken                         # OpenAI tokenizer
+sentence-transformers             # Embedding generation
+huggingface_hub                   # Model & dataset hosting
 
-# Extra document formats
-pandas          # CSV
-pillow          # Images
-pytesseract     # OCR (optional but useful for scanned PDFs/images)
-extract-msg     # Outlook .msg emails
-ebooklib        # EPUB eBooks
+#############################
+# 📄 PDF & Document Loaders
+#############################
+pypdf                             # PDF parsing
+PyPDF2                            # Alternative PDF parsing
+PyMuPDF                            # Advanced PDF parsing
+docx2txt                           # Extract text from .docx
+python-docx                        # Read/write Word documents
+python-pptx                        # Read/write PowerPoint files
+unstructured                       # Semi-structured text parsing
+openpyxl                           # Excel parsing
 
-# Web / HTML parsing
-beautifulsoup4==4.12.3
-lxml
-urllib3
-html5lib
+#############################
+# 🧾 Extra Document Formats
+#############################
+pandas                             # CSV and dataframes
+pillow                             # Image processing
+pytesseract                        # OCR
+extract-msg                        # Parse Outlook .msg files
+ebooklib                            # EPUB eBooks
 
-# Media / YouTube ingestion
-youtube_transcript_api
-yt_dlp
-pytube
+#############################
+# 🌍 Web / HTML Parsing
+#############################
+beautifulsoup4                     # HTML parsing
+lxml                              
+urllib3                            
+html5lib                           
 
-# Frontend frameworks
-streamlit==1.38.0
-gradio
+#############################
+# 🎥 Media / YouTube ingestion
+#############################
+youtube_transcript_api             
+yt_dlp                             
+pytube                              
 
-# Math & scientific
-sympy
-numpy
-matplotlib
+#############################
+# 🖥️ Frontend Frameworks
+#############################
+streamlit                         
+gradio                             
 
-# Env management
-python-dotenv==1.0.1
+#############################
+# 🔢 Math & Scientific
+#############################
+sympy                              
+numpy                              
+matplotlib                         
 
-# Search utilities
-duckduckgo-search
+#############################
+# ⚙️ Environment Management
+#############################
+python-dotenv                     
 
-# Logging / scheduling
-loguru==0.7.2
-apscheduler
+#############################
+# 🔍 Search Utilities
+#############################
+duckduckgo-search                   
 
-# KG / NLP
-spacy==3.7.4
-networkx==3.3
-pyvis==0.3.2
-neo4j
+#############################
+# 🧩 Logging / Scheduling
+#############################
+loguru                             
+apscheduler                         
 
-# Web inputs
-requests==2.32.3
+#############################
+# 🧠 Knowledge Graph / NLP
+#############################
+spacy                              
+networkx                            
+pyvis                               
+neo4j                               
 
-# Install spaCy model at build time
+#############################
+# 🌐 Web Inputs / Networking
+#############################
+requests                            
+certifi                             
+
+#############################
+# 🔤 spaCy English Model
+#############################
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
 
-# Certificates
-certifi
+#############################
+# 🧪 Fine-Tuning & LLM Training
+#############################
+streamlit                          
+transformers                        
+datasets                            
+peft                                
+accelerate                          
+bitsandbytes                        
+torch                               
+safetensors                         
+
+#############################
+# 🚀 API Serving & Utilities
+#############################
+fastapi                              
+uvicorn[standard]                     
+tenacity                              
+pydantic

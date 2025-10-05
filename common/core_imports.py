@@ -5,3 +5,4 @@ from core.math_gpt.app import run_math_gpt
 from core.code_gpt.app import run_code_gpt
 from core.run_docchat_filters.app import run_docchat_with_filters
 from core.kg_bot.app import run_kg_chatbot
+from core.fine_tune_llm.app import run_fine_tune
