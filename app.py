@@ -1,34 +1,33 @@
 import streamlit as st
-from common.core_imports import run_pdf_rag, run_search_engine, run_math_gpt, run_code_gpt, run_docchat_with_filters, run_kg_chatbot, run_fine_tune
+from common.core_imports import run_pdf_rag, run_search_engine, run_math_gpt, run_code_gpt, run_docchat_with_filters, run_kg_chatbot, run_fine_tune, run_youtube_blog
 
 st.set_page_config(page_title="Omni-AI", layout="wide")
 st.title("Omni-AI")
-st.title("All Your AI Needs. One OmniBrain.")
+st.subheader("All Your AI Needs. One OmniBrain.")
 
 st.sidebar.title("Choose a Feature")
 
 # === TOOL REGISTRY ===
 TOOL_REGISTRY = {
     "✅ Chatbots": {
-        "✅ PDF Q&A Chatbot": run_pdf_rag,
-        "✅ Multi-Agent RAG Chatbot": run_search_engine,
-        "✅ Multilingual Code Assistant": run_code_gpt
+        "✅ PDF Q&A Chatbot": lambda: run_pdf_rag,
+        "✅ Multi-Agent RAG Chatbot": lambda: run_search_engine,
+        "✅ Multilingual Code Assistant": lambda: run_code_gpt
     },
     "📄 Document & Web Intelligence": {
-        "📄 DocChat with Metadata Filters": run_docchat_with_filters
+        "📄 DocChat with Metadata Filters": lambda: run_docchat_with_filters
     },
     "🔢 Math & Reasoning": {
-        "🔢 Integrated Wikipedia + Math + Reasoning Agent": run_math_gpt
+        "🔢 Integrated Wikipedia + Math + Reasoning Agent": lambda: run_math_gpt
     },
     "🧠 Knowledge & Graph-based Tools": {
-        "🧠 Knowledge Graph Build and ChatBot": run_kg_chatbot,
+        "🧠 Knowledge Graph Build and ChatBot": lambda: run_kg_chatbot
     },
     "🧪 Fine-Tuning Playground": {
-        "🧪 Fine-tune LLM with Custom Data": run_fine_tune
+        "🧪 Fine-tune LLM with Custom Data": lambda: run_fine_tune
     },
     "🧠 Multi-Agent Systems": {
-        "🧠 YouTube-to-Blog Writer": st.write("YT-Blog Writer coming soon..."),
-        "🧠 Research Assistant with Search + Summary Agents": st.write("Research Assistant coming soon..."),
+        "🧠 YouTube-to-Blog Writer": run_youtube_blog
     }
 }
 

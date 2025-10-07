@@ -6,144 +6,146 @@
 ############################################################
 
 #############################
-# 🌐 Core LangChain ecosystem
+# 🌐 Core LangChain Ecosystem
 #############################
-langchain                       # Core LangChain framework
-langchain_community              # Community integrations
-langchain_core                   # Core utilities
-langchainhub                     # LangChainHub tools/prompts
-langgraph                        # For building multi-node workflows
-langchain_groq                   # Groq API integration
-langchain_astradb                # AstraDB vector DB integration
-langchain_nvidia-ai-endpoints    # NVIDIA AI endpoints
-langchain_openai                 # OpenAI model connectors
-langchain_neo4j                  # Neo4j graph DB integration
-langchain_pinecone               # Pinecone vector DB integration
-langchain_fireworks              # Fireworks.ai connector
-langchain_huggingface            # Hugging Face integration
-langchain_chroma                 # Chroma vector store
-langsmith                        # Observability and tracing
-langchain-experimental           # Experimental LangChain features
+langchain
+langchain_community
+langchain_core
+langchainhub
+langgraph
+langchain_groq
+langchain_astradb
+langchain_nvidia-ai-endpoints
+langchain_openai
+langchain_neo4j
+langchain_pinecone
+langchain_fireworks
+langchain_huggingface
+langchain_chroma
+langchain-text-splitters
+langsmith
+langchain-experimental
 
 ################################
-# 🤖 Multi-agent orchestration
+# 🤖 Multi-Agent Orchestration
 ################################
-crewai                           # CrewAI orchestration
-crewai_tools                     # CrewAI tools
+crewai
+crewai_tools
 
 #############################
 # 📚 Vector Databases
 #############################
-faiss-cpu                        # Local vector search
-chromadb                         # Chroma vector DB
+chromadb
+faiss-cpu
 
 #############################
 # ✍️ Tokenization & Embeddings
 #############################
-tiktoken                         # OpenAI tokenizer
-sentence-transformers             # Embedding generation
-huggingface_hub                   # Model & dataset hosting
+tiktoken
+sentence-transformers
+huggingface_hub
+sentencepiece
 
 #############################
-# 📄 PDF & Document Loaders
+# 📄 Document & File Parsing
 #############################
-pypdf                             # PDF parsing
-PyPDF2                            # Alternative PDF parsing
-PyMuPDF                            # Advanced PDF parsing
-docx2txt                           # Extract text from .docx
-python-docx                        # Read/write Word documents
-python-pptx                        # Read/write PowerPoint files
-unstructured                       # Semi-structured text parsing
-openpyxl                           # Excel parsing
+pypdf
+PyPDF2
+PyMuPDF
+docx2txt
+python-docx
+python-pptx
+openpyxl
+unstructured
+pdfminer.six
 
 #############################
 # 🧾 Extra Document Formats
 #############################
-pandas                             # CSV and dataframes
-pillow                             # Image processing
-pytesseract                        # OCR
-extract-msg                        # Parse Outlook .msg files
-ebooklib                            # EPUB eBooks
+pandas
+pillow
+pytesseract
+extract-msg
+ebooklib
 
 #############################
 # 🌍 Web / HTML Parsing
 #############################
-beautifulsoup4                     # HTML parsing
-lxml                              
-urllib3                            
-html5lib                           
+beautifulsoup4
+lxml
+urllib3
+html5lib
 
 #############################
-# 🎥 Media / YouTube ingestion
+# 🎥 Media / YouTube Ingestion
 #############################
-youtube_transcript_api             
-yt_dlp                             
-pytube                              
+yt_dlp
+youtube-transcript-api
+pytube
+faster-whisper   # ✅ Open-source offline transcription (no API key)
+
+#############################
+# 🧠 LLMs / Model Interfaces
+#############################
+transformers
+torch
+ollama-python
+
+#############################
+# 🧠 Knowledge Graph & NLP
+#############################
+spacy
+networkx
+pyvis
+neo4j
+graphdatascience   # optional Neo4j Graph Data Science toolkit
+
+#############################
+# 🧠 Fine-Tuning & LLM Training
+#############################
+datasets
+peft
+accelerate
+bitsandbytes
+safetensors
 
 #############################
 # 🖥️ Frontend Frameworks
 #############################
-streamlit                         
-gradio                             
+streamlit
+gradio
+
+#############################
+# 🚀 API Serving & Backend
+#############################
+fastapi
+uvicorn[standard]
+aiofiles
+tenacity
+pydantic
 
 #############################
 # 🔢 Math & Scientific
 #############################
-sympy                              
-numpy                              
-matplotlib                         
+numpy
+sympy
+matplotlib
 
 #############################
-# ⚙️ Environment Management
+# 🧩 Utilities & Logging
 #############################
-python-dotenv                     
+loguru
+apscheduler
+python-dotenv
+requests
+certifi
 
 #############################
 # 🔍 Search Utilities
 #############################
-duckduckgo-search                   
-
-#############################
-# 🧩 Logging / Scheduling
-#############################
-loguru                             
-apscheduler                         
-
-#############################
-# 🧠 Knowledge Graph / NLP
-#############################
-spacy                              
-networkx                            
-pyvis                               
-neo4j                               
-
-#############################
-# 🌐 Web Inputs / Networking
-#############################
-requests                            
-certifi                             
+duckduckgo-search
 
 #############################
 # 🔤 spaCy English Model
 #############################
 https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl
-
-#############################
-# 🧪 Fine-Tuning & LLM Training
-#############################
-streamlit                          
-transformers                        
-datasets                            
-peft                                
-accelerate                          
-bitsandbytes                        
-torch                               
-safetensors                         
-
-#############################
-# 🚀 API Serving & Utilities
-#############################
-fastapi                              
-uvicorn[standard]                     
-tenacity                              
-pydantic

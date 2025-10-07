@@ -1,154 +1,200 @@
-import sys
 import os
-import validators
+import json
 import time
-import urllib3
+import logging
+import streamlit as st
+from typing import Optional, List
+import yt_dlp
+import requests
+import re
+import html
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-from common.streamlit_imports import st
-
-from common.langchain_imports import (
-    PromptTemplate, load_summarize_chain,
-    YouTubeTranscriptApi, UnstructuredURLLoader,
-    TranscriptsDisabled, NoTranscriptFound, Document
-)
-
-from utils.llm import llm
-from utils.video_id import extract_video_id
-
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-http = urllib3.PoolManager(headers={"User-Agent": "Mozilla/5.0"})
-
-def run_text_summarization():
-    st.subheader("\U0001F9DC LangChain: Summarize Text From YT or Website")
-    st.info("\U0001F517 Paste a **YouTube video** or **website** URL to get a summarized version.")
-
-    try:
-        st.write("\U0001F527 Testing LLM...")
-        result = llm.invoke("Say Hello")
-        st.success(result.content)
-        model_used = result.response_metadata.get('model_name', 'Unknown')
-        st.success("Model used: " + model_used)
-        st.write("✅ LLM test successful.")
-    except Exception as e:
-        st.exception(f"❌ LLM Exception: {e}")
-        return
-
-    generic_url = st.text_input("URL", label_visibility="collapsed")
-
-    MAX_RETRIES = 15
-    RETRY_DELAY = 5
-
-    if st.button("Summarize the content from YT or Website"):
-        if not generic_url.strip():
-            st.error("Please provide a URL.")
-            return
-
-        if not validators.url(generic_url):
-            st.error("Please enter a valid URL.")
-            return
-
-        st.write(f"\U0001F517 URL received: {generic_url}")
-
-        success = False
-        attempt_msg = st.empty()
-        
-        parse_error_shown = False
-        youtube_msg_shown = False
-        building_chain_msg_shown = False
-        running_chain_msg_shown = False
-
-        video_id = extract_video_id(generic_url)
-
-        st.write("Video ID: " + video_id)
-
-        for attempt in range(1, MAX_RETRIES + 1):
-                attempt_msg.markdown(f"🔁 **Attempt {attempt} of {MAX_RETRIES}**")
-                with st.spinner("\U0001F50D Loading and summarizing content..."):
-                    docs = []
-
-                    if "youtube.com" in generic_url or "youtu.be" in generic_url:
-                        if not youtube_msg_shown:
-                            st.write("\U0001F3A5 Detected YouTube URL.")
-                            youtube_msg_shown = True
-
-                        try:
-                            transcripts = YouTubeTranscriptApi.list_transcripts(video_id)
-                            en_transcript = transcripts.find_transcript(['en'])
-                            result = en_transcript.fetch()
-                            st.write("\U0001F4E5 Analysing YouTube Video...")
-                            docs = [Document(page_content="\n".join([line["text"] for line in result]))]
-
-                        except (TranscriptsDisabled, NoTranscriptFound):
-                            st.error("❌ This YouTube video doesn't have a transcript available.")
-                            break
-
-                        except Exception as e:
-                            if not parse_error_shown:
-                                st.warning(f"⚠️ Could not load transcript. Retrying...\nError: {type(e).__name__}: {e}")
-                                parse_error_shown = True
-                            else:
-                                st.info(f"Retrying... Error: {type(e).__name__}: {e}")
-                            continue
+# ---------- Optional imports ----------
+try:
+    from transformers import pipeline
+    import torch
+except Exception:
+    pipeline = None
+    torch = None
 
 
-                    else:
-                        st.write("\U0001F310 Detected regular website URL.")
-                        try:
-                            st.write("\U0001F4E5 Sending request to URL...")
-                            response = http.request('GET', generic_url)
+def run_youtube_blog():
+    # ---------- Streamlit UI ----------
+    st.subheader("📺 YouTube → Blog Writer (Captions Only)")
 
-                            st.write(f"\U0001F4E1 Response status code: {response.status}")
-                            if response.status != 200 or len(response.data.decode('utf-8').strip()) == 0:
-                                st.error("❌ Failed to fetch website content.")
-                                break
+    video_url = st.text_input("🎥 Paste YouTube Video URL:")
+    hf_model_option = st.text_input("🤖 Hugging Face Model", "google/flan-t5-base")
 
-                            loader = UnstructuredURLLoader(
-                                urls=[generic_url],
-                                ssl_verify=False,
-                                headers={"User-Agent": "Mozilla/5.0"}
-                            )
-                            st.write("\U0001F4C4 Extracting content with UnstructuredURLLoader...")
-                            docs = loader.load()
-                            st.write(f"✅ Content extracted. Docs count: {len(docs)}")
+    # Logs + Output containers
+    with st.expander("🪶 Logs", expanded=False):
+        log_container = st.empty()
 
-                            if not docs:
-                                st.error("❌ No usable content extracted from the webpage.")
-                                break
-                        except Exception as e:
-                            st.error("❌ Error loading webpage.")
-                            st.exception(e)
-                            break
+    result_container = st.empty()
 
-                    prompt_template = """
-                                            You are an expert summarizer. Summarize the following content in less than 300 words, preserving key points, events, or arguments. Keep the tone neutral and clear.
+    # ---------- Logger Setup ----------
+    class StreamlitLogger(logging.Handler):
+        def __init__(self):
+            super().__init__()
+            self.logs = ""
 
-                                            Content:
-                                            {text}
-                                      """
-                    
-                    prompt = PromptTemplate(template=prompt_template, input_variables=['text'])
+        def emit(self, record):
+            self.logs += f"\n[{record.levelname}] {record.getMessage()}"
+            log_container.text(self.logs)
 
-                    if not building_chain_msg_shown:
-                        st.write("\U0001F9E0 Building summarization chain...")
-                        building_chain_msg_shown = True
+    logger = logging.getLogger("yt_blog")
+    logger.setLevel(logging.INFO)
+    logger.addHandler(StreamlitLogger())
 
-                    chain = load_summarize_chain(llm, chain_type="stuff", prompt=prompt)
+    # ---------- Caption Fetch + Cleaner ----------
+    def fetch_captions(video_url: str) -> Optional[str]:
+        try:
+            ydl_opts = {
+                "skip_download": True,
+                "writeautomaticsub": True,
+                "writeinfojson": True,
+                "subtitleslangs": ["en"],
+                "quiet": True,
+                "outtmpl": "%(id)s",
+            }
 
-                    if not running_chain_msg_shown:
-                        st.write("\U0001F4E6 Running summarization chain...")
-                        running_chain_msg_shown = True
+            with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                info = ydl.extract_info(video_url, download=False)
+                subtitles = info.get("automatic_captions") or info.get("subtitles")
 
-                    output_summary = chain.invoke(docs)
+                if not subtitles:
+                    logger.warning("No captions found.")
+                    return None
 
-                    st.success("✅ Summary:")
-                    st.write(output_summary['output_text'])
+                en_captions = subtitles.get("en") or subtitles.get("en-US")
+                if not en_captions:
+                    logger.warning("No English captions found.")
+                    return None
 
-                    success = True
-                    break
-          
-                time.sleep(RETRY_DELAY)
+                caption_url = en_captions[0]["url"]
+                logger.info(f"🎥 Found captions URL:\n{caption_url}")
 
-        if not success:
-            st.error("❌ All attempts to summarize the content failed. Please try again later.")
+                # Handle HLS timedtext playlists (m3u8)
+                if "manifest.googlevideo.com" in caption_url and "playlist" in caption_url:
+                    logger.info("📜 Detected playlist (.m3u8), fetching actual .vtt URL...")
+                    m3u8_res = requests.get(caption_url)
+                    if m3u8_res.status_code != 200:
+                        logger.error("Failed to fetch playlist.")
+                        return None
+                    # Extract actual .vtt URL
+                    matches = re.findall(r"https?://[^\s]+fmt=vtt[^\s]+", m3u8_res.text)
+                    if not matches:
+                        logger.error("No .vtt link found inside playlist.")
+                        return None
+                    vtt_url = matches[0]
+                    logger.info(f"➡️ Found .vtt URL:\n{vtt_url}")
+                    caption_url = vtt_url
+
+                res = requests.get(caption_url)
+                if res.status_code != 200:
+                    logger.error(f"Failed to fetch captions: {res.status_code}")
+                    return None
+
+                cleaned = clean_captions(res.text)
+                logger.info("✅ Transcript fetched and cleaned successfully!")
+                return cleaned
+
+        except Exception as e:
+            logger.error(f"Failed to fetch captions: {e}")
+            return None
+
+    def clean_captions(text: str) -> str:
+        """Cleans raw WebVTT captions into readable text."""
+        text = re.sub(r"WEBVTT.*", "", text)
+        text = re.sub(r"Kind:.*", "", text)
+        text = re.sub(r"Language:.*", "", text)
+        text = re.sub(r"\d{2}:\d{2}:\d{2}\.\d{3} --> .*", "", text)
+        text = re.sub(r"<[^>]+>", "", text)
+        text = html.unescape(text)
+        text = re.sub(r"\n+", "\n", text)
+        return text.strip()
+
+    # ---------- Helper Functions ----------
+    def chunk_text_by_chars(text: str, max_chars: int = 1000) -> List[str]:
+        paras = [p.strip() for p in text.split('\n') if p.strip()]
+        chunks, cur, cur_len = [], [], 0
+        for p in paras:
+            if cur_len + len(p) + 1 > max_chars:
+                chunks.append('\n'.join(cur))
+                cur, cur_len = [p], len(p)
+            else:
+                cur.append(p)
+                cur_len += len(p) + 1
+        if cur:
+            chunks.append('\n'.join(cur))
+        logger.info(f"Split text into {len(chunks)} chunks.")
+        return chunks
+
+    def init_hf_pipeline(model_name: str = "google/flan-t5-base"):
+        if pipeline is None:
+            raise RuntimeError("transformers not installed.")
+        device = 0 if torch and torch.cuda.is_available() else -1
+        logger.info(f"Loading model: {model_name} on device: {device}")
+        return pipeline("text2text-generation", model=model_name, device=device)
+
+    def summarize_chunks(chunks: List[str], hf_model: str):
+        summarizer = init_hf_pipeline(hf_model)
+        summaries = []
+        for i, chunk in enumerate(chunks):
+            prompt = (
+                "Summarize the following transcript section in 3 concise, factual bullet points:\n\n" + chunk
+            )
+            logger.info(f"Summarizing chunk {i+1}/{len(chunks)}...")
+            out = summarizer(prompt, max_length=256, do_sample=False)
+            summaries.append(out[0]['generated_text'])
+        return summaries
+
+    def generate_blog(summaries: List[str], hf_model: str):
+        generator = init_hf_pipeline(hf_model)
+        combined = "\n\n".join(summaries)
+        prompt = (
+                    "You are an assistant that ALWAYS responds with valid JSON.\n"
+                    "Generate a blog post from the following summaries.\n"
+                    "Keys: title, seo_description, tags (list), content (markdown).\n\n"
+                    f"{combined}\n\nReturn JSON only, no extra text."
+                )
+
+        logger.info("Generating final blog content...")
+        out = generator(prompt, max_length=1024, do_sample=False)
+        txt = out[0]["generated_text"]
+        try:
+            start, end = txt.find("{"), txt.rfind("}")
+            return json.loads(txt[start:end + 1])
+        except Exception:
+            logger.warning("Model did not return valid JSON; using fallback.")
+            return {
+                "title": "Auto-generated YouTube Blog",
+                "seo_description": combined[:160],
+                "tags": ["youtube", "summary"],
+                "content": "# Auto-generated Blog\n\n" + combined
+            }
+
+    # ---------- UI Trigger ----------
+    if st.button("🚀 Generate Blog") and video_url:
+        with st.spinner("Fetching captions and generating blog..."):
+            start_time = time.time()
+            captions = fetch_captions(video_url)
+            if not captions:
+                st.error("❌ No captions found! Please choose a video with captions.")
+                return
+
+            chunks = chunk_text_by_chars(captions)
+            summaries = summarize_chunks(chunks, hf_model_option)
+            blog = generate_blog(summaries, hf_model_option)
+            elapsed = round(time.time() - start_time, 2)
+
+        st.success(f"✅ Blog generated in {elapsed}s!")
+
+        result_container.markdown(f"### 📝 {blog['title']}")
+        result_container.markdown(blog['content'])
+
+        st.download_button(
+            label="📥 Download Blog (Markdown)",
+            data=f"# {blog['title']}\n\n{blog['content']}",
+            file_name="youtube_blog.md",
+            mime="text/markdown"
+        )
