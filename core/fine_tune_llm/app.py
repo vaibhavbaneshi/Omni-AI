@@ -1,8 +1,13 @@
-import os, json, time
-import streamlit as st
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+import json, time, uuid
+
+from common.streamlit_imports import st
+
 from configs.config import JOBS_DIR
+
 from utils.storage import save_job_file  # hypothetical helper to save job
-import uuid
 
 def run_fine_tune():
     st.subheader("🧪 Fine-Tune LLM")

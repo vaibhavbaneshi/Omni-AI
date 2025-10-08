@@ -1,10 +1,16 @@
-import streamlit as st
-from utils.file_loader_manager import FileLoaderManager
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.vectorstores import Chroma
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
+from common.streamlit_imports import st
+
+from common.langchain_imports import RecursiveCharacterTextSplitter
+from common.langchain_imports import HuggingFaceEmbeddings
+from common.langchain_imports import Chroma
+from common.langchain_imports import PromptTemplate
+
 from utils.llm import llm
-from langchain.prompts import PromptTemplate
+from utils.file_loader_manager import FileLoaderManager
+
 import pandas as pd
 
 # LLM RAG wrapper with metadata included

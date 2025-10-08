@@ -1,13 +1,17 @@
-import os
+import os, sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
+
 import json
 import time
 import logging
-import streamlit as st
-from typing import Optional, List
 import yt_dlp
 import requests
 import re
 import html
+
+from common.streamlit_imports import st
+
+from typing import Optional, List
 
 # ---------- Optional imports ----------
 try:
