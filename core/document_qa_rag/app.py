@@ -1,129 +1,130 @@
-## RAG Q&A Conversation With PDF Including Chat History
-import tempfile
-import sys
-import os
+import os, re, fitz, tempfile, hashlib, asyncio
+import streamlit as st
+from concurrent.futures import ThreadPoolExecutor
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-from common.streamlit_imports import st
-
-from common.langchain_imports import PyMuPDFLoader, RecursiveCharacterTextSplitter, create_history_aware_retriever, create_retrieval_chain, create_stuff_documents_chain, Chroma, ChatPromptTemplate, MessagesPlaceholder, RunnableWithMessageHistory, BaseChatMessageHistory, ChatMessageHistory
-
+from common.langchain_imports import PyMuPDFLoader, RecursiveCharacterTextSplitter, Chroma
+from langchain.prompts import PromptTemplate
+from langchain.retrievers import BM25Retriever, EnsembleRetriever, ContextualCompressionRetriever
+from langchain.retrievers.multi_query import MultiQueryRetriever
+from langchain.retrievers.document_compressors import LLMChainExtractor
 from utils.chunk_size import get_dynamic_chunk_size
-
 from utils.llm import llm
-
 from utils.embeddings import embeddings
 
-def run_pdf_rag():
-    st.subheader('RAG Q&A Conversation With PDF Including Chat History')
-    st.write('This app allows you to ask questions about a PDF document and maintain a chat history.')
-
-    session_id=st.text_input("Session ID", value="default_session")
-
-    if 'store' not in session_id:
-        st.session_state.store={}
-
-    uploaded_files=st.file_uploader("Choose a PDF file", type='pdf', accept_multiple_files=True)
-
-    if uploaded_files and len(uploaded_files) > 0:
-        all_docs = []
-
-        for uploaded_file in uploaded_files:
-            try:
-                st.write(f"🔄 Processing: {uploaded_file.name}")
-                file_bytes = uploaded_file.read()
-
-                # Write to a temporary file
-                with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-                    tmp.write(file_bytes)
-                    temp_path = tmp.name
-
-                # Load using file path
-                loader = PyMuPDFLoader(temp_path)
-                docs = loader.load()
-                all_docs.extend(docs)
-
-                st.success(f"✅ Loaded {len(docs)} pages from {uploaded_file.name}")
-
-            except Exception as e:
-                st.error(f"❌ Error loading {uploaded_file.name}: {e}")
-
-        if all_docs:
-            chunk_size = get_dynamic_chunk_size(all_docs)
-            st.write(f"🧩 Chunk size: {chunk_size}")
-
-            text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size)
-            splits = text_splitter.split_documents(all_docs)
-            st.success(f"✅ Total chunks created: {len(splits)}")
-        else:
-            st.warning("⚠️ No documents were successfully loaded.")
-
-        vectorstore = Chroma.from_documents(documents=splits, embedding=embeddings, persist_directory="./chroma_db")
-        retriever = vectorstore.as_retriever()    
-
-        contextualize_q_system_prompt=(
-            "Given a chat history and the latest user question"
-            "which might reference context in the chat history, "
-            "formulate a standalone question which can be understood "
-            "without the chat history. Do NOT answer the question, "
-            "just reformulate it if needed and otherwise return it as is."
-        )
-
-        contextualize_q_prompt=ChatPromptTemplate.from_messages(
-            [
-                ("system", contextualize_q_system_prompt),
-                MessagesPlaceholder("chat_history"),
-                ("human", "{input}"),
-            ]
-        )
-
-        history_aware_retriever=create_history_aware_retriever(llm, retriever, contextualize_q_prompt)
-
-        system_prompt = (
-            "You are an assistant for question-answering tasks. "
-            "Use the following pieces of retrieved context to answer "
-            "the question. If you don't know the answer, say that you "
-            "don't know. Use three sentences maximum and keep the "
-            "answer concise."
-            "\n\n"
-            "{context}"
-        )
-
-        qa_prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system", system_prompt),
-                MessagesPlaceholder("chat_history"),
-                ("human", "{input}"),
-            ]
-        )
-
-        question_answer_chain=create_stuff_documents_chain(llm, qa_prompt)
-
-        rag_chain=create_retrieval_chain(history_aware_retriever,question_answer_chain)
-
-        def get_session_history(session:str)->BaseChatMessageHistory:
-                if session_id not in st.session_state.store:
-                    st.session_state.store[session_id]=ChatMessageHistory()
-                return st.session_state.store[session_id]
-            
-        conversational_rag_chain=RunnableWithMessageHistory(
-            rag_chain,get_session_history,
-            input_messages_key="input",
-            history_messages_key="chat_history",
-            output_messages_key="answer"
-        )
-
-        user_input = st.text_input("Your question:")
-        if user_input:
-            session_history=get_session_history(session_id)
-            response = conversational_rag_chain.invoke(
-                {"input": user_input},
-                config={
-                    "configurable": {"session_id":session_id}
-                },  # constructs a key "abc123" in `store`.
+# ========== SAFE INVOKE WITH SUMMARIZATION FALLBACK ==========
+def safe_llm_invoke(question, context, qa_prompt, llm):
+    try:
+        return llm.invoke(qa_prompt.format(context=context, question=question))
+    except Exception as e:
+        err_str = str(e).lower()
+        if any(term in err_str for term in ["too large", "413", "rate_limit", "too many tokens"]):
+            st.warning("⚠️ Context too large — summarizing and retrying...")
+            summarize_prompt = PromptTemplate.from_template(
+                "Summarize the following context into key points. "
+                "Preserve important names, numbers, and facts.\n\n{context}"
             )
-            st.write("Assistant:", response['answer'])
-    else:
-        st.info("⬆️ Please upload one or more PDF files.")
+            try:
+                summary = llm.invoke(summarize_prompt.format(context=context[:10000]))
+                st.info("🧾 Context summarized successfully.")
+                return llm.invoke(qa_prompt.format(context=summary, question=question))
+            except Exception as inner_e:
+                return f"❌ Retry failed: {inner_e}"
+        return f"❌ LLM error: {e}"
 
+# ========== MAIN RAG FUNCTION ==========
+def run_pdf_rag():
+    st.title("PDF Q&A Assistant")
+
+    uploaded_files = st.file_uploader("📄 Upload PDF files", type="pdf", accept_multiple_files=True)
+    if not uploaded_files:
+        st.info("⬆️ Upload PDF(s) to start.")
+        return
+
+    all_docs, metadata_store = [], {}
+
+    with st.spinner("🔍 Extracting PDFs and metadata..."):
+        for uf in uploaded_files:
+            bytes_data = uf.read()
+            file_hash = hashlib.md5(bytes_data).hexdigest()
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                tmp.write(bytes_data)
+                tmp_path = tmp.name
+
+            with fitz.open(tmp_path) as pdf:
+                meta = pdf.metadata
+                metadata_store[uf.name] = {"meta": meta, "pages": pdf.page_count}
+
+            loader = PyMuPDFLoader(tmp_path)
+            docs = loader.load()
+            for i, d in enumerate(docs):
+                d.metadata["source"] = uf.name
+                d.metadata["page"] = i + 1
+                d.metadata["priority"] = 1.2 if i < 3 else 1.0
+            all_docs.extend(docs)
+
+    # Parallel cleanup
+    def clean_doc(d):
+        text = d.page_content.strip()
+        if not text or re.search(r"copyright by", text, re.I) or len(text.split()) < 5:
+            return None
+        return d
+
+    with ThreadPoolExecutor() as executor:
+        clean_docs = list(filter(None, executor.map(clean_doc, all_docs)))
+
+    chunk_size = get_dynamic_chunk_size(clean_docs)
+    splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=200)
+    splits = splitter.split_documents(clean_docs)
+
+    # Cache per-file embeddings
+    cache_dir = f"./chroma_cache/{file_hash}"
+    if os.path.exists(cache_dir):
+        st.info(f"♻️ Using cached vectorstore for {uf.name}")
+        vectorstore = Chroma(persist_directory=cache_dir, embedding_function=embeddings)
+    else:
+        os.makedirs(cache_dir, exist_ok=True)
+        vectorstore = Chroma.from_documents(splits, embeddings, persist_directory=cache_dir)
+
+    semantic_retriever = vectorstore.as_retriever(search_kwargs={"k": 12})
+    bm25_retriever = BM25Retriever.from_documents(splits)
+    bm25_retriever.k = 12
+
+    multi_prompt = PromptTemplate.from_template(
+        "Generate 2 rephrasings of this question using different words but same meaning.\n\n{question}"
+    )
+    multi_retriever = MultiQueryRetriever.from_llm(retriever=semantic_retriever, llm=llm, prompt=multi_prompt)
+    compressor = LLMChainExtractor.from_llm(llm)
+    hybrid_retriever = EnsembleRetriever(
+        retrievers=[
+            ContextualCompressionRetriever(base_compressor=compressor, base_retriever=multi_retriever),
+            bm25_retriever
+        ],
+        weights=[0.7, 0.3]
+    )
+
+    qa_prompt = PromptTemplate.from_template(
+        "You are a document assistant. Use the provided context (including metadata) to answer accurately. "
+        "If not found, reply 'Not mentioned'.\n\nContext:\n{context}\n\nQuestion: {question}"
+    )
+
+    st.markdown("### 💬 Ask Questions About Your PDFs")
+    user_input = st.text_area("Enter your question:")
+    if not st.button("🚀 Query PDF") or not user_input.strip():
+        return
+
+    with st.spinner("🤔 Thinking..."):
+        docs = hybrid_retriever.get_relevant_documents(user_input)
+        metadata_context = "\n".join([
+            f"📘 {f}: {d['meta'].get('title','N/A')} | Author: {d['meta'].get('author','N/A')} | Pages: {d['pages']}"
+            for f, d in metadata_store.items()
+        ])
+        text_context = "\n\n---\n\n".join([d.page_content for d in docs])
+        full_context = metadata_context + "\n\n---\n\n" + text_context
+
+        # Token-aware context limiter
+        if len(full_context) > 12000:
+            st.warning("⚠️ Context too large, trimming to safe limit.")
+            full_context = full_context[:12000]
+
+        response = safe_llm_invoke(user_input, full_context, qa_prompt, llm)
+        st.success(response.content)

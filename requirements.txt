@@ -58,6 +58,7 @@ python-pptx
 openpyxl
 unstructured
 pdfminer.six
+rank_bm25
 
 #############################
 # 🧾 Extra Document Formats
