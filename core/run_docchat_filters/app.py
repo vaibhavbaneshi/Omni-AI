@@ -92,7 +92,10 @@ def run_docchat_with_filters():
             return
 
         try:
-            embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+            embeddings = HuggingFaceEmbeddings(
+                model_name="BAAI/bge-small-en-v1.5",
+                model_kwargs={"device": "cpu"}
+            )
             persist_dir = "./chroma_db"
             vectordb = Chroma.from_documents(chunks, embeddings, persist_directory=persist_dir)
             vectordb.persist()
