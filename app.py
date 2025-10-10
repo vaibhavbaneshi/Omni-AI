@@ -10,6 +10,60 @@ from common.core_imports import (
     run_youtube_blog
 )
 
+import threading
+import time
+from neo4j import GraphDatabase
+from configs.config import NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD
+
+# ===============================
+# ⚙️ GLOBAL NEO4J CONNECTION HANDLER
+# ===============================
+driver = None
+driver_lock = threading.Lock()
+
+def get_driver():
+    """Ensure the Neo4j driver is always active and reconnects if needed."""
+    global driver
+    with driver_lock:
+        if driver is None:
+            try:
+                driver = GraphDatabase.driver(
+                    NEO4J_URI,
+                    auth=(NEO4J_USER, NEO4J_PASSWORD),
+                    max_connection_lifetime=3600,  # 1 hour
+                    connection_timeout=15,
+                    max_retry_time=30
+                )
+                print("🟢 Neo4j driver initialized successfully.")
+            except Exception as e:
+                print(f"🔴 Failed to initialize Neo4j driver: {e}")
+                driver = None
+        return driver
+
+
+def ping_neo4j():
+    """Continuously pings the Neo4j DB every 30 minutes to prevent idle timeout."""
+    while True:
+        try:
+            drv = get_driver()
+            if drv:
+                with drv.session() as session:
+                    session.run("RETURN 1 AS keep_alive")
+                    print(f"🟢 [{time.strftime('%Y-%m-%d %H:%M:%S')}] Neo4j keep-alive ping sent.")
+            else:
+                print("🔴 No active Neo4j driver — retrying next cycle.")
+        except Exception as e:
+            print(f"⚠️ Neo4j keep-alive failed: {e}")
+            # Force reconnect attempt next time
+            with driver_lock:
+                global driver
+                driver = None
+        time.sleep(1800)  # Ping every 30 minutes
+        
+
+# Start the background thread
+threading.Thread(target=ping_neo4j, daemon=True).start()
+
 # =======================
 # PAGE CONFIG
 # =======================

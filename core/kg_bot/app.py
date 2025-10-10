@@ -9,7 +9,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from utils.logger import logger
 from services.text_extractor import extract_text_from_file, extract_text_from_url
 from services.kg_service import kg_service
-from utils.scheduler import start_scheduler, ping_neo4j
+from utils.scheduler import start_scheduler, ping_neo4j, keep_neo4j_alive
+
+@st.cache_resource
+def init_neo4j_driver():
+    return keep_neo4j_alive(interval_minutes=30)
+
+driver = init_neo4j_driver()
 
 # Initialize Knowledge Graph service
 kg = kg_service()
