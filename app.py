@@ -73,8 +73,6 @@ st.markdown('<h1 class="main-title">🤖 Omni-AI</h1>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">All Your AI Needs — One OmniBrain 🧠</div>', unsafe_allow_html=True)
 st.divider()
 
-st.sidebar.title("🧭 Choose a Feature")
-
 # =====================
 # ⚙️ TOOL REGISTRY (lazy-loaded)
 # =====================
