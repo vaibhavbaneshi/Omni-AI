@@ -146,6 +146,7 @@ certifi
 #############################
 duckduckgo-search
 arxiv
+wikipedia
 
 #############################
 # 🔤 spaCy English Model
