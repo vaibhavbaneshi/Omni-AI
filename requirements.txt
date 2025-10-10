@@ -128,7 +128,7 @@ pydantic
 #############################
 # 🔢 Math & Scientific
 #############################
-numpy
+numpy<2.0
 sympy
 matplotlib
 numexpr
