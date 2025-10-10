@@ -136,6 +136,7 @@ def run_kg_chatbot():
             else:
                 try:
                     result = kg.generate_query(user_question)
+                    st.write(result)
                 except Exception as e:
                     logger.error(f"Query failed: {e}")
                     st.error("❌ Error querying Knowledge Graph. Check logs.")

@@ -203,6 +203,8 @@ class kg_service:
 
                     Now generate ONLY the Cypher query for the following question.
                     Question: "{user_question}"
+                    Output format (strict):
+                        - MATCH (a:ENTITY {{name: "Elon Musk"}})-[:NET_WORTH]->(n:ENTITY) RETURN n.name AS result
                     """
 
             response = llm.invoke(prompt)
@@ -228,8 +230,6 @@ class kg_service:
                 # Show only values
                 values = [list(record.values())[0] for record in data]
                 st.success("✅ Query Results:")
-                st.write(values)
-
                 return values
             except Exception as e:
                 st.error(f"❌ KG query failed: {e}")
