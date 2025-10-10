@@ -148,6 +148,7 @@ certifi
 duckduckgo-search
 arxiv
 wikipedia
+ddgs
 
 #############################
 # 🔤 spaCy English Model
