@@ -1,0 +1,10 @@
+{
+  "job_id": "0b06d5f7-d2c2-4358-877b-b51576ad6d09",
+  "jsonl_path": "C:\\Users\\HP\\OneDrive\\Desktop\\Omni-AI\\jobs\\fine_tune_file.jsonl",
+  "base_model": "meta-llama/Llama-2-7b-hf",
+  "epochs": 3,
+  "batch": 4,
+  "lr": 2e-05,
+  "max_length": 1024,
+  "status": "queued"
+}

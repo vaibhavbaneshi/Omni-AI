@@ -147,9 +147,6 @@ def load_tools():
         "🧠 Knowledge & Graph-based Tools": {
             "🔗 Knowledge Graph Build and ChatBot": run_kg_chatbot
         },
-        "🧪 Fine-Tuning Playground": {
-            "🧬 Fine-tune LLM with Custom Data": run_fine_tune
-        },
         "🎥 Content & Creativity": {
             "📝 YouTube-to-Blog Writer": run_youtube_blog
         }
