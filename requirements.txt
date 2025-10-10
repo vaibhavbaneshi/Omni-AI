@@ -145,6 +145,7 @@ certifi
 # 🔍 Search Utilities
 #############################
 duckduckgo-search
+arxiv
 
 #############################
 # 🔤 spaCy English Model
