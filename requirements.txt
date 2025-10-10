@@ -131,6 +131,7 @@ pydantic
 numpy
 sympy
 matplotlib
+numexpr
 
 #############################
 # 🧩 Utilities & Logging
