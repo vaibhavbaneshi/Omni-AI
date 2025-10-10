@@ -69,7 +69,7 @@ def run_math_gpt():
             st.write(msg['content'])
 
     # --- Chat Input ---
-    if user_input := st.chat_input("💬 Type your math or reasoning question..."):
+    if user_input := st.chat_input("💬 Type your math or reasoning question... (Ask question like mathematical theorems or reasoning questions)"):
         st.session_state.messages.append({"role": "user", "content": user_input})
         with st.chat_message("user"):
             st.write(user_input)
