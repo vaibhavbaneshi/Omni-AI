@@ -100,7 +100,7 @@ networkx
 pyvis
 neo4j
 graphdatascience   # optional Neo4j Graph Data Science toolkit
-altair
+altair==4.2.2
 
 #############################
 # 🧠 Fine-Tuning & LLM Training
