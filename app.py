@@ -30,16 +30,14 @@ def get_driver():
                 driver = GraphDatabase.driver(
                     NEO4J_URI,
                     auth=(NEO4J_USER, NEO4J_PASSWORD),
-                    max_connection_lifetime=3600,  # 1 hour
-                    connection_timeout=15,
-                    max_retry_time=30
+                    max_connection_lifetime=3600,
+                    connection_timeout=15
                 )
                 print("🟢 Neo4j driver initialized successfully.")
             except Exception as e:
                 print(f"🔴 Failed to initialize Neo4j driver: {e}")
                 driver = None
         return driver
-
 
 def ping_neo4j():
     """Continuously pings the Neo4j DB every 30 minutes to prevent idle timeout."""
@@ -54,14 +52,12 @@ def ping_neo4j():
                 print("🔴 No active Neo4j driver — retrying next cycle.")
         except Exception as e:
             print(f"⚠️ Neo4j keep-alive failed: {e}")
-            # Force reconnect attempt next time
             with driver_lock:
                 global driver
                 driver = None
         time.sleep(1800)  # Ping every 30 minutes
-        
 
-# Start the background thread
+# Start background thread
 threading.Thread(target=ping_neo4j, daemon=True).start()
 
 # =======================
