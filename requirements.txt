@@ -114,7 +114,7 @@ safetensors
 #############################
 # 🖥️ Frontend Frameworks
 #############################
-streamlit
+streamlit>=1.22.0
 gradio
 
 #############################
