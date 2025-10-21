@@ -15,6 +15,17 @@ import time
 from neo4j import GraphDatabase
 from configs.config import NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD
 
+# =======================
+# PAGE CONFIG
+# =======================
+if "page_config_set" not in st.session_state:
+    st.set_page_config(
+        page_title="Omni-AI",
+        page_icon="🤖",
+        layout="wide"
+    )
+    st.session_state.page_config_set = True
+
 # ===============================
 # ⚙️ GLOBAL NEO4J CONNECTION HANDLER
 # ===============================
@@ -59,17 +70,6 @@ def ping_neo4j():
 
 # Start background thread
 threading.Thread(target=ping_neo4j, daemon=True).start()
-
-# =======================
-# PAGE CONFIG
-# =======================
-if "page_config_set" not in st.session_state:
-    st.set_page_config(
-        page_title="Omni-AI",
-        page_icon="🤖",
-        layout="wide"
-    )
-    st.session_state.page_config_set = True
 
 # =======================
 # CSS STYLING
