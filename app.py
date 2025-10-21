@@ -1,4 +1,16 @@
 import streamlit as st
+
+# =======================
+# PAGE CONFIG
+# =======================
+if "page_config_set" not in st.session_state:
+    st.set_page_config(
+        page_title="Omni-AI",
+        page_icon="🤖",
+        layout="wide"
+    )
+    st.session_state.page_config_set = True
+    
 from common.core_imports import (
     run_pdf_rag,
     run_search_engine,
@@ -14,17 +26,6 @@ import threading
 import time
 from neo4j import GraphDatabase
 from configs.config import NEO4J_URI, NEO4J_USER, NEO4J_PASSWORD
-
-# =======================
-# PAGE CONFIG
-# =======================
-if "page_config_set" not in st.session_state:
-    st.set_page_config(
-        page_title="Omni-AI",
-        page_icon="🤖",
-        layout="wide"
-    )
-    st.session_state.page_config_set = True
 
 # ===============================
 # ⚙️ GLOBAL NEO4J CONNECTION HANDLER
