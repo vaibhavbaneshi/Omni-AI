@@ -1,4 +1,16 @@
 import streamlit as st
+
+# =======================
+# PAGE CONFIG
+# =======================
+if "page_config_set" not in st.session_state:
+    st.set_page_config(
+        page_title="Omni-AI",
+        page_icon="🤖",
+        layout="wide"
+    )
+    st.session_state.page_config_set = True
+    
 from common.core_imports import (
     run_pdf_rag,
     run_search_engine,
@@ -59,15 +71,6 @@ def ping_neo4j():
 
 # Start background thread
 threading.Thread(target=ping_neo4j, daemon=True).start()
-
-# =======================
-# PAGE CONFIG
-# =======================
-st.set_page_config(
-    page_title="Omni-AI",
-    layout="wide",
-    page_icon="🤖",
-)
 
 # =======================
 # CSS STYLING
