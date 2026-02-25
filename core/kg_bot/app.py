@@ -74,6 +74,7 @@ def run_kg_chatbot():
         ping_neo4j()
 
     if st.button("✅ Check Input"):
+        final_chunk = []
         try:
             if input_type == "Text":
                 final_chunk = [user_text]
