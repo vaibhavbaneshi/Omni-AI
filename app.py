@@ -195,7 +195,4 @@ if feature == "--Select--":
         st.markdown('<div class="stCard"><div class="card-title">🔢 Math & Reasoning</div><div class="card-desc">Perform advanced reasoning with integrated Wikipedia and mathematical capabilities.</div></div>', unsafe_allow_html=True)
 
     with col5:
-        st.markdown('<div class="stCard"><div class="card-title">🧪 Fine-Tuning Playground</div><div class="card-desc">Train, evaluate, and experiment with fine-tuning your own models easily.</div></div>', unsafe_allow_html=True)
-
-    with col6:
         st.markdown('<div class="stCard"><div class="card-title">🎥 Creative Systems</div><div class="card-desc">Transform YouTube videos into blogs or scripts using open-source caption parsing and summarization.</div></div>', unsafe_allow_html=True)
