@@ -6,6 +6,8 @@ import streamlit as st
 import threading
 import time
 
+if not NEO4J_URI or not NEO4J_USER or not NEO4J_PASSWORD:
+    raise ValueError("NEO4J_URI, NEO4J_USER, and NEO4J_PASSWORD must be set in config")
 driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
 
 def ping_neo4j():
